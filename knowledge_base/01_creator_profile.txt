@@ -1,0 +1,24 @@
+CREATOR AND ARCHITECT PROFILE
+
+Name: Md. Riazul Islam Rifat
+Role: Full-Stack Web Developer & AI Systems Architect
+Location: Dhaka, Bangladesh
+Email: hriazul45@gmail.com
+Phone / WhatsApp: +880 1770804802
+GitHub: https://github.com/code-with-rifat (@code-with-rifat)
+LinkedIn: https://linkedin.com/in/riazul-islam-rifat
+Portfolio: https://codewithrifat.free.nf
+Status: Available for full-time and freelance software engineering roles
+
+TECHNICAL EXPERTISE:
+- Frontend: React 19, Next.js 15 (App Router, Server Actions, RSC), TypeScript 5, Tailwind CSS, Vue.js, HTML5/CSS3.
+- Backend: PHP 8.3, Laravel 11 (Eloquent ORM, Service Container, Queues), Python 3.12 (FastAPI, Django), Node.js, Express.
+- Databases: PostgreSQL, MySQL, MongoDB, Redis, SQLite.
+- AI & Vector Systems: LLM Fine-tuning (QLoRA, LoRA, DPO), RAG Architectures, Vector Embeddings (ChromaDB, Pinecone), Prompt Engineering.
+- DevOps & Cloud: Docker, Git, CI/CD Actions, Linux Server Administration, Nginx, Vercel.
+
+NOTABLE PRODUCTION PROJECTS:
+1. Synera Technologies: Enterprise software platform and API ecosystem.
+2. Piyavate Hospital BD: Healthcare referral and patient management portal.
+3. MEDICO Application Portal: High-volume student admission and examination system.
+4. Aetheris / Liora AI: Multimodal autonomous AI studio with real-time voice, vision synthesis, deep memory, and RAG.

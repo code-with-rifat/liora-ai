@@ -1,0 +1,151 @@
+'use client';
+
+import React, { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { LogOut, Menu, Settings } from 'lucide-react';
+import { AI_NAME } from '@/lib/brand';
+import { AIModelId } from '@/lib/models';
+import { ModelSelect } from '@/components/ModelSelect';
+import { AuthUser } from '@/components/modals/AuthModal';
+
+interface TopNavbarProps {
+  onToggleSidebar: () => void;
+  onOpenCreatorModal: () => void;
+  onOpenSettings: () => void;
+  activeModel: AIModelId;
+  onSelectModel: (id: AIModelId) => void;
+  user: AuthUser | null;
+  onSignOut: () => void;
+}
+
+function Avatar({ user, size = 32 }: { user: AuthUser; size?: number }) {
+  const letter = (user.name || user.email || 'U').slice(0, 1).toUpperCase();
+  if (user.picture) {
+    return (
+      <img
+        src={user.picture}
+        alt=""
+        width={size}
+        height={size}
+        className="rounded-full object-cover"
+        referrerPolicy="no-referrer"
+      />
+    );
+  }
+  return (
+    <div
+      className="rounded-full bg-[#1a73e8] text-white font-medium flex items-center justify-center"
+      style={{ width: size, height: size, fontSize: size * 0.4 }}
+    >
+      {letter}
+    </div>
+  );
+}
+
+export const TopNavbar: React.FC<TopNavbarProps> = ({
+  onToggleSidebar,
+  onOpenSettings,
+  activeModel,
+  onSelectModel,
+  user,
+  onSignOut,
+}) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, []);
+
+  return (
+    <header className="h-14 bg-transparent px-3 sm:px-5 flex items-center justify-between z-30 sticky top-0">
+      <div className="flex items-center gap-2.5">
+        <button
+          onClick={onToggleSidebar}
+          className="p-2 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100"
+        >
+          <Menu size={20} />
+        </button>
+        <span className="font-medium text-[18px] tracking-tight flex items-center gap-2 text-[#1f1f1f]">
+          {AI_NAME}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <ModelSelect value={activeModel} onChange={onSelectModel} compact />
+        <button
+          onClick={onOpenSettings}
+          className="p-2 rounded-full text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100"
+          title="Settings"
+        >
+          <Settings size={18} />
+        </button>
+        {user ? (
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              className="rounded-full ring-2 ring-transparent hover:ring-[#dadce0] overflow-hidden"
+              title={user.email}
+            >
+              <Avatar user={user} size={32} />
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 mt-3 w-[320px] bg-white rounded-[28px] shadow-2xl border border-[#e8eaed] p-4 z-50">
+                <div className="flex flex-col items-center text-center px-2 py-3">
+                  <Avatar user={user} size={72} />
+                  <p className="mt-3 text-[16px] font-medium text-[#1f1f1f]">{user.name}</p>
+                  <p className="text-sm text-[#80868b] truncate w-full">{user.email}</p>
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      onOpenSettings();
+                    }}
+                    className="mt-4 h-9 px-4 rounded-full border border-[#dadce0] text-sm font-medium text-[#1f1f1f] hover:bg-[#f8fafc]"
+                  >
+                    Manage your {AI_NAME} Account
+                  </button>
+                </div>
+                <div className="mt-2 border-t border-[#f1f3f4] pt-2">
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      onOpenSettings();
+                    }}
+                    className="w-full flex items-center gap-3 text-left text-sm px-3 py-2.5 rounded-2xl hover:bg-[#f1f3f4]"
+                  >
+                    <Settings size={16} className="text-[#444746]" />
+                    Settings
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      onSignOut();
+                    }}
+                    className="w-full flex items-center gap-3 text-left text-sm px-3 py-2.5 rounded-2xl hover:bg-[#f1f3f4]"
+                  >
+                    <LogOut size={16} className="text-[#444746]" />
+                    Sign out
+                  </button>
+                </div>
+                <p className="text-center text-[11px] text-[#80868b] mt-2 pb-1">
+                  Signed in to {AI_NAME}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link
+            href="/signin"
+            className="h-9 px-4 rounded-full border border-[#dadce0] text-sm font-medium text-[#1a73e8] hover:bg-[#e8f0fe] inline-flex items-center"
+          >
+            Sign in
+          </Link>
+        )}
+      </div>
+    </header>
+  );
+};

@@ -1,0 +1,20 @@
+FULL-STACK WEB ENGINEERING & ARCHITECTURE SPECIFICATIONS
+
+1. NEXT.JS 15 & REACT 19 ECOSYSTEM
+- React Server Components (RSC): Zero client bundle footprint for data-fetching components executing strictly on the server.
+- Server-Side Rendering (SSR): Dynamic page generation on each HTTP request with streaming hydration.
+- Static Site Generation (SSG) & Incremental Static Regeneration (ISR): Pre-rendered static pages with background cache revalidation.
+- Server Actions: Direct server functions executed securely via form submissions and client RPC without dedicated REST endpoints.
+- App Router: Layouts, loading.tsx, error.tsx, and nested dynamic route segments.
+
+2. LARAVEL 11 & PHP 8.3 ARCHITECTURE
+- Model-View-Controller (MVC): Separation of business logic, presentation, and data persistence.
+- Eloquent ORM: Active Record pattern with polymorphic, many-to-many, and eager-loaded relationships.
+- Service Container & Dependency Injection: Inversion of Control (IoC) with auto-wiring interfaces to implementations.
+- Queues & Workers: Asynchronous background job processing with Redis and database drivers.
+- Web Security: Built-in CSRF token verification, prepared PDO statements mitigating SQL Injection, and Bcrypt password hashing.
+
+3. PYTHON & FASTAPI
+- Modern asynchronous API runtime built on Starlette and Pydantic.
+- Automatic interactive Swagger/OpenAPI documentation generation.
+- Dependency injection system for database sessions, authentication, and background workers.

@@ -1,0 +1,19 @@
+ARTIFICIAL INTELLIGENCE, TRANSFORMERS, AND RAG ARCHITECTURE
+
+1. TRANSFORMER NEURAL NETWORK ARCHITECTURE
+- Invented by Google in 2017 ("Attention Is All You Need").
+- Tokenization: Byte-Pair Encoding (BPE) breaking natural text into numerical vocabulary tokens.
+- Scaled Dot-Product Attention: Attention(Q, K, V) = softmax(Q * K^T / sqrt(d_k)) * V.
+- Multi-Head Attention: Allows the model to jointly attend to information from different representation subspaces at different positions.
+- Feed-Forward Networks & Layer Normalization: Residual skip connections preventing vanishing gradients.
+
+2. QLORA & FINE-TUNING METHODOLOGY
+- 4-bit NormalFloat (NF4) quantization: Compresses base weights from 16-bit to 4-bit memory space.
+- Low-Rank Adaptation (LoRA): Freezes base model weights and injects low-rank trainable adapter matrices (A and B) into attention projections (q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj).
+- Rank (r) and Alpha: r=16, alpha=16 provides balanced capacity and gradient scaling.
+
+3. RETRIEVAL-AUGMENTED GENERATION (RAG)
+- Vector Embeddings: Dense float vectors representing semantic meaning (e.g. sentence-transformers/all-MiniLM-L6-v2).
+- Vector Storage: ChromaDB indexing text chunks with cosine similarity.
+- Retrieval Pipeline: Top-k document chunk retrieval injected into system context before LLM inference.
+- Eliminates hallucinations and grounds LLM responses strictly on verified domain knowledge.

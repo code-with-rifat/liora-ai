@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #fafafa;
+  --sidebar: #f4f4f5;
+  --ink: #18181b;
+  --muted: #71717a;
+  --accent: #6d5ef6;
+  --accent-soft: #eeeaff;
+  --line: #e4e4e7;
+  --font-sans: 'Inter', 'Noto Sans Bengali', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100vh;
+  background-color: #fafafa;
+  color: #18181b;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.gemini-hello {
+  background: linear-gradient(90deg, #4285f4 0%, #9b72cb 42%, #d96570 72%, #f2a60f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gemini-wash {
+  background: radial-gradient(circle at 50% 30%, rgba(232, 240, 254, 0.6) 0%, rgba(250, 250, 250, 1) 70%);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 8px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.35s ease-out both;
+}
+
+textarea {
+  font-family: inherit;
+}

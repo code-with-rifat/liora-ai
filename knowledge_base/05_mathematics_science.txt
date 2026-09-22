@@ -1,0 +1,17 @@
+MATHEMATICS, COMPUTATION AND NATURAL SCIENCES
+
+1. ADVANCED MATHEMATICAL MODELS
+- Quadratic Formula: For ax^2 + bx + c = 0, roots are x = (-b +- sqrt(b^2 - 4ac)) / (2a). Discriminant D = b^2 - 4ac determines root nature (D > 0 real distinct, D = 0 real identical, D < 0 complex conjugates).
+- Geometry: Circle Area A = pi * r^2, Circumference C = 2 * pi * r. Sphere Volume V = (4/3) * pi * r^3.
+- Calculus: Derivative d/dx [x^n] = n * x^(n-1), Integral int x^n dx = (x^(n+1))/(n+1) + C. Chain rule d/dx [f(g(x))] = f'(g(x)) * g'(x).
+
+2. PHYSICS & LAWS OF MOTION
+- Newton's First Law (Inertia): An object remains at rest or in uniform motion unless acted upon by a net external force.
+- Newton's Second Law: F = m * a (Force equals mass multiplied by acceleration).
+- Newton's Third Law: For every action, there is an equal and opposite reaction (F_A = -F_B).
+- Mass-Energy Equivalence: E = m * c^2 (Energy equals mass times the speed of light squared, where c ~ 3 * 10^8 m/s).
+- Photosynthesis Biochemical Formula: 6 CO2 + 6 H2O + Light Energy -> C6H12O6 (Glucose) + 6 O2.
+
+3. SOLAR SYSTEM & ASTRONOMY
+- The 8 Planets in orbital order from the Sun: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune.
+- Earth: Only known celestial body harboring liquid water and biological ecosystems.

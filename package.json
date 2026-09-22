@@ -1,0 +1,36 @@
+{
+  "name": "liora-ai",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "canvas-confetti": "^1.9.4",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.16.0",
+    "mongodb": "^6.14.2",
+    "mongoose": "^8.13.0",
+    "next": "^15.2.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sharp": "^0.35.4",
+    "tailwind-merge": "^3.0.2",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@types/uuid": "^10.0.0",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.8.2"
+  }
+}
