@@ -1,5 +1,5 @@
 import { ReplyLanguage } from './language';
-import { CREATOR_PROFILE } from './creator';
+import { CREATOR_PROFILE, creatorShortReply } from './creator';
 import { AI_NAME } from './brand';
 
 export interface KnowledgeArticle {
