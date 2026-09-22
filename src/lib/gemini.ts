@@ -333,18 +333,17 @@ async function tryPollinationsMultiTurn(
   return null;
 }
 
-// 3. Groq Provider (Ultra-Fast LPU Inference with 120B / 70B / 27B models)
+// 3. Groq Provider (Ultra-Fast LPU Inference with Verified Active Models)
 async function tryGroq(messages: ChatMessage[], systemPrompt: string, userText: string): Promise<{ text: string; modelUsed: string } | null> {
   const key = process.env.GROQ_API_KEY;
   if (!key) return null;
 
+  // Active verified models on user's Groq account
   const groqModels = [
     'openai/gpt-oss-120b',
-    'qwen/qwen3.8-27b',
-    'llama-3.3-70b-versatile',
-    'llama-3.1-70b-versatile',
     'openai/gpt-oss-20b',
-    'allam-2-7b'
+    'qwen/qwen3.8-27b',
+    'allam-2-7b',
   ];
 
   const temperature = detectOptimalTemperature(userText);
@@ -376,10 +375,10 @@ async function tryGroq(messages: ChatMessage[], systemPrompt: string, userText: 
       if (typeof content === 'string' && isUsableText(content)) {
         const friendlyName = model.includes('120b')
           ? 'Groq GPT-OSS 120B'
-          : model.includes('qwen')
-            ? 'Groq Qwen 27B'
-            : model.includes('llama')
-              ? 'Groq LLaMA 3.3 70B'
+          : model.includes('20b')
+            ? 'Groq GPT-OSS 20B'
+            : model.includes('qwen')
+              ? 'Groq Qwen 27B'
               : `Groq (${model})`;
         return { text: content.trim(), modelUsed: friendlyName };
       }

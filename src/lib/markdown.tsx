@@ -16,14 +16,14 @@ function inlineFormat(text: string): React.ReactNode[] {
       nodes.push(
         <code
           key={key++}
-          className="px-1.5 py-0.5 mx-0.5 rounded-md bg-slate-800 text-cyan-300 font-mono text-[13px] border border-slate-700/60"
+          className="px-1.5 py-0.5 mx-0.5 rounded-md bg-zinc-100 text-blue-600 font-mono text-[13px] border border-zinc-200/80 font-medium"
         >
           {token.slice(1, -1)}
         </code>
       );
     } else if (token.startsWith('**') || token.startsWith('__')) {
       nodes.push(
-        <strong key={key++} className="font-bold text-white">
+        <strong key={key++} className="font-bold text-zinc-950">
           {token.slice(2, -2)}
         </strong>
       );
@@ -34,14 +34,14 @@ function inlineFormat(text: string): React.ReactNode[] {
           href={match[3]}
           target="_blank"
           rel="noreferrer"
-          className="text-cyan-400 hover:text-cyan-300 underline underline-offset-4 decoration-cyan-500/50 hover:decoration-cyan-400 transition-colors font-medium"
+          className="text-blue-600 hover:text-blue-700 underline underline-offset-4 decoration-blue-400 hover:decoration-blue-600 transition-colors font-medium"
         >
           {match[2]}
         </a>
       );
     } else {
       nodes.push(
-        <em key={key++} className="italic text-slate-300">
+        <em key={key++} className="italic text-zinc-700">
           {token.slice(1, -1)}
         </em>
       );
@@ -73,22 +73,22 @@ function parseMarkdownTable(lines: string[]): React.ReactNode {
   );
 
   return (
-    <div className="my-4 overflow-x-auto rounded-xl border border-slate-700/80 bg-slate-900/60 shadow-lg">
+    <div className="my-4 overflow-x-auto rounded-2xl border border-zinc-200 bg-white shadow-sm">
       <table className="w-full text-left border-collapse text-xs md:text-sm">
         <thead>
-          <tr className="bg-slate-800/90 border-b border-slate-700 text-cyan-300 font-semibold">
+          <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-900 font-bold">
             {headerRow.map((h, idx) => (
-              <th key={idx} className="px-4 py-2.5 font-bold">
+              <th key={idx} className="px-4 py-3 font-bold text-zinc-900">
                 {inlineFormat(h)}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-800 text-slate-200">
+        <tbody className="divide-y divide-zinc-100 text-zinc-800">
           {rows.map((row, rIdx) => (
-            <tr key={rIdx} className="hover:bg-slate-800/40 transition-colors">
+            <tr key={rIdx} className="hover:bg-zinc-50/80 transition-colors">
               {row.map((cell, cIdx) => (
-                <td key={cIdx} className="px-4 py-2.5 leading-relaxed">
+                <td key={cIdx} className="px-4 py-3 leading-relaxed text-zinc-800 font-normal">
                   {inlineFormat(cell)}
                 </td>
               ))}
@@ -105,7 +105,7 @@ export function MarkdownBody({ text }: { text: string }) {
   const blocks = text.split(/```/);
 
   return (
-    <div className="space-y-3.5 text-slate-100 text-[15px] leading-relaxed">
+    <div className="space-y-3.5 text-zinc-800 text-[15px] leading-7">
       {blocks.map((block, i) => {
         // Code Block
         if (i % 2 === 1) {
@@ -113,8 +113,8 @@ export function MarkdownBody({ text }: { text: string }) {
           const lang = newline === -1 ? '' : block.slice(0, newline).trim();
           const code = newline === -1 ? block : block.slice(newline + 1).replace(/\n$/, '');
           return (
-            <div key={i} className="my-3 overflow-hidden rounded-2xl border border-slate-800 bg-[#0b0f19] shadow-xl">
-              <div className="flex items-center justify-between px-4 py-2 bg-slate-900/90 border-b border-slate-800 text-xs font-mono text-cyan-400">
+            <div key={i} className="my-3 overflow-hidden rounded-2xl border border-zinc-800 bg-[#0f172a] shadow-md text-slate-100">
+              <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border-b border-slate-800 text-xs font-mono text-cyan-400">
                 <span className="uppercase tracking-wider font-semibold">{lang || 'CODE'}</span>
                 <button
                   onClick={() => navigator.clipboard.writeText(code)}
@@ -123,7 +123,7 @@ export function MarkdownBody({ text }: { text: string }) {
                   Copy
                 </button>
               </div>
-              <pre className="p-4 overflow-x-auto text-[13px] font-mono leading-relaxed text-slate-200">
+              <pre className="p-4 overflow-x-auto text-[13px] font-mono leading-relaxed text-slate-100">
                 <code>{code}</code>
               </pre>
             </div>
@@ -152,7 +152,7 @@ export function MarkdownBody({ text }: { text: string }) {
           if (!listItems.length) return;
           if (isOrderedList) {
             elements.push(
-              <ol key={`ol-${elements.length}`} className="list-decimal list-outside pl-6 space-y-1.5 text-slate-200">
+              <ol key={`ol-${elements.length}`} className="list-decimal list-outside pl-6 space-y-1.5 text-zinc-800">
                 {listItems.map((item, idx) => (
                   <li key={idx} className="leading-relaxed">
                     {inlineFormat(item)}
@@ -162,7 +162,7 @@ export function MarkdownBody({ text }: { text: string }) {
             );
           } else {
             elements.push(
-              <ul key={`ul-${elements.length}`} className="list-disc list-outside pl-6 space-y-1.5 text-slate-200">
+              <ul key={`ul-${elements.length}`} className="list-disc list-outside pl-6 space-y-1.5 text-zinc-800">
                 {listItems.map((item, idx) => (
                   <li key={idx} className="leading-relaxed">
                     {inlineFormat(item)}
@@ -178,7 +178,7 @@ export function MarkdownBody({ text }: { text: string }) {
         const flushPara = () => {
           if (!para.length) return;
           elements.push(
-            <p key={`p-${elements.length}`} className="leading-7 text-slate-200">
+            <p key={`p-${elements.length}`} className="leading-7 text-zinc-800 font-normal">
               {inlineFormat(para.join(' '))}
             </p>
           );
@@ -211,7 +211,7 @@ export function MarkdownBody({ text }: { text: string }) {
           if (/^(\*\*\*|---|___)$/.test(trimmed)) {
             flushList();
             flushPara();
-            elements.push(<hr key={`hr-${idx}`} className="my-4 border-slate-800" />);
+            elements.push(<hr key={`hr-${idx}`} className="my-4 border-zinc-200" />);
             continue;
           }
 
@@ -223,10 +223,10 @@ export function MarkdownBody({ text }: { text: string }) {
             const heading = trimmed.replace(/^#{1,4}\s+/, '');
             const cls =
               level === 1
-                ? 'text-xl font-bold text-white pt-2 border-b border-slate-800 pb-1'
+                ? 'text-xl font-bold text-zinc-950 pt-2 border-b border-zinc-200 pb-1.5'
                 : level === 2
-                ? 'text-lg font-bold text-cyan-300 pt-1.5'
-                : 'text-base font-semibold text-white pt-1';
+                ? 'text-lg font-bold text-zinc-900 pt-2 pb-1'
+                : 'text-base font-bold text-zinc-900 pt-1.5';
             elements.push(
               <div key={`h-${idx}`} className={cls}>
                 {inlineFormat(heading)}
@@ -269,4 +269,3 @@ export function MarkdownBody({ text }: { text: string }) {
     </div>
   );
 }
-
