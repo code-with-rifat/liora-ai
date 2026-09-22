@@ -26,7 +26,11 @@ function cleanTextForSpeech(raw: string): string {
 }
 
 // Grok-style natural neural voice selection
-function selectBestNeuralVoice(voices: SpeechSynthesisVoice[], isBangla: boolean, gender: 'female' | 'male') {
+function selectBestNeuralVoice(
+  voices: SpeechSynthesisVoice[],
+  isBangla: boolean,
+  gender?: 'female' | 'male' | 'neural' | string
+) {
   if (!voices || voices.length === 0) return null;
 
   if (isBangla) {
