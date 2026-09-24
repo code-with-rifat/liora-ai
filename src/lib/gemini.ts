@@ -243,7 +243,7 @@ async function tryGeminiAPI(
   apiKey: string,
   systemPrompt: string
 ): Promise<string | null> {
-  const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+  const models = ['gemini-2.0-flash', 'gemini-1.5-flash'];
   const contents = formatGeminiContents(messages, latestText);
   const temperature = detectOptimalTemperature(latestText);
 
@@ -267,7 +267,7 @@ async function tryGeminiAPI(
             },
           }),
         },
-        9000
+        4000
       );
 
       if (!res.ok) continue;
@@ -302,7 +302,7 @@ async function tryPollinationsMultiTurn(
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
         },
       },
-      18000
+      4500
     );
 
     if (getRes.ok) {
@@ -330,7 +330,7 @@ async function tryPollinationsMultiTurn(
           temperature: 0.7,
         }),
       },
-      12000
+      4000
     );
 
     if (postRes.ok) {
@@ -355,11 +355,11 @@ async function tryGroq(messages: ChatMessage[], systemPrompt: string, userText: 
   const key = process.env.GROQ_API_KEY;
   if (!key) return null;
 
-  // Active verified models on user's Groq account
+  // Active verified models on user's Groq account (fastest first)
   const groqModels = [
-    'openai/gpt-oss-120b',
     'openai/gpt-oss-20b',
     'qwen/qwen3.8-27b',
+    'openai/gpt-oss-120b',
     'allam-2-7b',
   ];
 
@@ -380,10 +380,10 @@ async function tryGroq(messages: ChatMessage[], systemPrompt: string, userText: 
             model,
             messages: formatted,
             temperature,
-            max_tokens: 3500,
+            max_tokens: 3000,
           }),
         },
-        9000
+        3500
       );
 
       if (!res.ok) continue;
@@ -416,9 +416,6 @@ async function tryOpenRouter(messages: ChatMessage[], systemPrompt: string): Pro
     'liquid/lfm-2.5-2.6b:free',
     'qwen/qwen3.8-27b:free',
     'google/gemma-4-31b-it:free',
-    'nvidia/nemotron-3-super-120b-a12b:free',
-    'z-ai/glm-5.2:free',
-    'nex-agi/nex-n2.5-pro:free',
     'google/gemini-2.0-flash-exp:free',
   ];
 
@@ -441,7 +438,7 @@ async function tryOpenRouter(messages: ChatMessage[], systemPrompt: string): Pro
             messages: formatted,
           }),
         },
-        8000
+        3500
       );
 
       if (!res.ok) continue;

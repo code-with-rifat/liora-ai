@@ -232,32 +232,20 @@ async function searchTavily(query: string): Promise<WebSearchResult[]> {
 }
 
 // Check if a query is informational / factual / news / real-time
+// Check if a query specifically benefits from live web search
 export function isSearchWorthy(query: string): boolean {
   if (!query || query.trim().length < 3) return false;
   const q = query.toLowerCase().trim();
 
-  // Skip simple conversational phrases
-  if (/^(hi|hello|hey|kemon aso|valo|bye|good morning|thanks|dhonnobad)[.!?\s]*$/i.test(q)) {
-    return false;
-  }
-
-  // Keywords that definitely benefit from live search
+  // Explicit keywords that demand real-time search
   const triggerKeywords = [
     'news', 'today', 'latest', 'current', 'update', 'notun', 'khobor', 'ajker',
     'bortoman', 'price', 'dam', 'rate', 'weather', 'abohawa', 'score', 'match',
-    'release', 'feature', 'who is', 'what is', 'ke', 'kobe', 'kothay', 'karon',
-    'history', 'meaning', 'stock', 'election', '2024', '2025', '2026', 'next.js',
-    'react', 'gemini', 'chatgpt', 'openai', 'groq', 'claude', 'ai', 'bangladesh',
+    'khela', 'release date', 'election', '2025', '2026', 'dollar', 'taka',
+    'search', 'google', 'live', 'shobshobon', 'somproti'
   ];
 
-  if (triggerKeywords.some((k) => q.includes(k))) return true;
-
-  // Question sentences
-  if (q.includes('?') || q.includes('কি') || q.includes('কেন') || q.includes('কখন') || q.includes('কীভাবে')) {
-    return true;
-  }
-
-  return q.split(' ').length >= 3;
+  return triggerKeywords.some((k) => q.includes(k));
 }
 
 // Main Real-Time Web Search & Grounding Engine
@@ -275,24 +263,36 @@ export async function performWebSearchGrounding(
   }
 
   const cleanQuery = query.replace(/[?।!,]/g, ' ').trim();
+  const q = cleanQuery.toLowerCase();
 
-  // Execute searches in parallel
-  const [tavilyResults, weatherResults, currencyResults, newsResults, hnResults] = await Promise.all([
-    searchTavily(cleanQuery),
-    searchLiveWeather(cleanQuery),
-    searchLiveCurrency(cleanQuery),
-    searchGoogleNews(cleanQuery, lang),
-    searchHackerNews(cleanQuery),
-  ]);
+  const searchTasks: Array<Promise<WebSearchResult[]>> = [];
 
-  // Combine and deduplicate by URL
+  if (process.env.TAVILY_API_KEY) {
+    searchTasks.push(searchTavily(cleanQuery));
+  }
+
+  if (q.includes('weather') || q.includes('abohawa') || q.includes('temperature') || q.includes('tapmatra')) {
+    searchTasks.push(searchLiveWeather(cleanQuery));
+  } else if (q.includes('dollar') || q.includes('usd') || q.includes('taka') || q.includes('bdt') || q.includes('rate') || q.includes('currency')) {
+    searchTasks.push(searchLiveCurrency(cleanQuery));
+  } else if (q.includes('tech') || q.includes('next.js') || q.includes('ai') || q.includes('github') || q.includes('python')) {
+    searchTasks.push(searchHackerNews(cleanQuery));
+    searchTasks.push(searchGoogleNews(cleanQuery, lang));
+  } else {
+    searchTasks.push(searchGoogleNews(cleanQuery, lang));
+  }
+
+  // Fast parallel resolution
+  const resultsGroups = await Promise.all(searchTasks);
   const seenUrls = new Set<string>();
   const combined: WebSearchResult[] = [];
 
-  for (const item of [...tavilyResults, ...weatherResults, ...currencyResults, ...newsResults, ...hnResults]) {
-    if (item.url && !seenUrls.has(item.url)) {
-      seenUrls.add(item.url);
-      combined.push(item);
+  for (const group of resultsGroups) {
+    for (const item of group) {
+      if (item.url && !seenUrls.has(item.url)) {
+        seenUrls.add(item.url);
+        combined.push(item);
+      }
     }
   }
 
