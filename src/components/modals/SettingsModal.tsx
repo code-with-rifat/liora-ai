@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Key, Save, Trash2, X } from 'lucide-react';
 import { StorageService } from '@/lib/storage';
-import { AI_NAME } from '@/lib/brand';
+import { AI_NAME, CREATOR_NAME } from '@/lib/brand';
 import { AI_MODELS, AIModelId } from '@/lib/models';
 
 interface SettingsModalProps {
@@ -106,12 +106,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           <p className="text-[11px] text-[#80868b] mt-2">
             Auto uses this key when present. Fast, Llama, and Mistral stay free without a key.
           </p>
-          <a href="/admin" className="inline-block mt-3 text-xs text-[#1a73e8] mr-4">
+          <a href="/admin" className="inline-block mt-3 text-xs text-[#1a73e8] mr-4 hover:underline">
             Open admin panel
           </a>
           {onOpenCreator && (
-            <button type="button" onClick={onOpenCreator} className="inline-block mt-3 text-xs text-[#1a73e8]">
-              About the creator
+            <button
+              type="button"
+              onClick={onOpenCreator}
+              className="inline-flex items-center gap-1 mt-3 text-xs font-medium text-[#1a73e8] hover:underline"
+            >
+              ✨ Architected by {CREATOR_NAME}
             </button>
           )}
         </div>

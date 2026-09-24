@@ -8,9 +8,11 @@ import {
   MessageSquare,
   Plus,
   Settings,
+  Sparkles,
 } from 'lucide-react';
 import { ActiveTab } from '@/components/Header';
 import { Conversation } from '@/types';
+import { CREATOR_NAME } from '@/lib/brand';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -119,7 +121,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        <div className="p-3">
+        {isOpen && (
+          <div className="px-3 pb-1">
+            <div className="p-2.5 rounded-2xl bg-white/70 border border-[#e8eaed] flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                R
+              </div>
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-1">
+                  <span className="text-[12px] font-semibold text-zinc-900 truncate">
+                    {CREATOR_NAME}
+                  </span>
+                  <Sparkles size={11} className="text-[#1a73e8] shrink-0" />
+                </div>
+                <span className="text-[10.5px] text-zinc-500 font-medium truncate">
+                  Sole Creator &amp; Architect
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="p-3 pt-1">
           <button
             onClick={() => {
               onOpenSettings();

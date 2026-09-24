@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { LogOut, Menu, Settings } from 'lucide-react';
-import { AI_NAME } from '@/lib/brand';
+import { AI_NAME, CREATOR_NAME } from '@/lib/brand';
 import { AIModelId } from '@/lib/models';
 import { ModelSelect } from '@/components/ModelSelect';
 import { AuthUser } from '@/components/modals/AuthModal';
@@ -44,6 +44,7 @@ function Avatar({ user, size = 32 }: { user: AuthUser; size?: number }) {
 
 export const TopNavbar: React.FC<TopNavbarProps> = ({
   onToggleSidebar,
+  onOpenCreatorModal,
   onOpenSettings,
   activeModel,
   onSelectModel,
@@ -63,16 +64,29 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
   return (
     <header className="h-14 bg-transparent px-3 sm:px-5 flex items-center justify-between z-30 sticky top-0">
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2">
         <button
           onClick={onToggleSidebar}
           className="p-2 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100"
+          title="Menu"
         >
           <Menu size={20} />
         </button>
-        <span className="font-medium text-[18px] tracking-tight flex items-center gap-2 text-[#1f1f1f]">
-          {AI_NAME}
-        </span>
+        <button
+          onClick={onOpenCreatorModal}
+          className="flex flex-col text-left group cursor-pointer"
+          title={`Created by ${CREATOR_NAME}`}
+        >
+          <span className="font-semibold text-[16px] sm:text-[18px] tracking-tight flex items-center gap-1.5 text-[#1f1f1f] group-hover:text-[#1a73e8] transition-colors">
+            {AI_NAME}
+            <span className="text-[9.5px] px-1.5 py-0.2 rounded-full bg-blue-50 text-blue-600 font-semibold border border-blue-200/60">
+              AI
+            </span>
+          </span>
+          <span className="text-[10px] sm:text-[11px] font-medium text-zinc-500 group-hover:text-blue-600 transition-colors -mt-0.5 truncate max-w-[130px] sm:max-w-none">
+            by {CREATOR_NAME}
+          </span>
+        </button>
       </div>
 
       <div className="flex items-center gap-2">

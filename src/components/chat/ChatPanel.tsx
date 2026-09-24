@@ -274,15 +274,19 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   if (showHero) {
     const first = userName?.trim().split(/\s+/)[0];
     return (
-      <div className="h-[calc(100vh-56px)] w-full gemini-wash flex flex-col items-center justify-center px-4 pb-16">
-        <h1 className="gemini-hello text-[40px] sm:text-[52px] font-medium tracking-tight mb-2 text-center">
+      <div className="min-h-[calc(100vh-56px)] w-full gemini-wash flex flex-col items-center justify-center px-4 py-8 overflow-y-auto">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-blue-200/80 text-zinc-700 text-[12px] sm:text-[13px] font-medium shadow-xs mb-3 backdrop-blur-xs">
+          <Sparkles size={14} className="text-[#1a73e8] animate-pulse shrink-0" />
+          <span>Architected &amp; Created by <strong className="text-zinc-950 font-semibold">{CREATOR_NAME}</strong></span>
+        </div>
+        <h1 className="gemini-hello text-[36px] sm:text-[52px] font-medium tracking-tight mb-2 text-center">
           {first ? `Hello, ${first}` : 'Hello'}
         </h1>
-        <p className="text-[18px] sm:text-[22px] text-[#444746] mb-8 text-center">
+        <p className="text-[16px] sm:text-[22px] text-[#444746] mb-6 text-center">
           How can I help you today?
         </p>
         {composer}
-        <div className="mt-8 w-full max-w-[720px] grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="mt-6 w-full max-w-[720px] grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
           {STARTERS.map((card) => {
             const Icon = card.icon;
             return (
@@ -293,15 +297,18 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                   sendingRef.current = true;
                   onSendMessage(card.prompt);
                 }}
-                className="text-left bg-white/80 hover:bg-white border border-[#e8eaed] rounded-3xl px-4 py-4 shadow-sm"
+                className="text-left bg-white/80 hover:bg-white border border-[#e8eaed] rounded-2xl sm:rounded-3xl px-4 py-3.5 sm:py-4 shadow-sm transition-all hover:shadow-md"
               >
-                <Icon size={18} className="text-[#1a73e8] mb-2" />
-                <div className="text-[14px] font-medium text-[#1f1f1f]">{card.title}</div>
-                <div className="text-[12px] text-[#80868b] mt-0.5">{card.subtitle}</div>
+                <Icon size={18} className="text-[#1a73e8] mb-1.5" />
+                <div className="text-[13.5px] sm:text-[14px] font-medium text-[#1f1f1f]">{card.title}</div>
+                <div className="text-[11.5px] sm:text-[12px] text-[#80868b] mt-0.5">{card.subtitle}</div>
               </button>
             );
           })}
         </div>
+        <p className="text-center text-[11.5px] text-[#80868b] mt-6">
+          ✨ Created exclusively by <strong className="text-zinc-700 font-semibold">{CREATOR_NAME}</strong> • {AI_NAME}
+        </p>
       </div>
     );
   }
@@ -331,10 +338,10 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         </div>
       </div>
 
-      <div className="w-full pb-5 px-4">
+      <div className="w-full pb-4 px-4">
         {composer}
-        <p className="text-center text-[11px] text-[#80868b] mt-2">
-          {AI_NAME} can make mistakes. Created by {CREATOR_NAME}
+        <p className="text-center text-[11.5px] text-[#80868b] mt-2">
+          {AI_NAME} can make mistakes • Architect &amp; Creator: <strong className="text-zinc-700 font-semibold">{CREATOR_NAME}</strong>
         </p>
       </div>
     </div>

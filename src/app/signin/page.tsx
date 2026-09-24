@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Eye, EyeOff, Sparkles } from 'lucide-react';
-import { AI_NAME } from '@/lib/brand';
+import { AI_NAME, CREATOR_NAME } from '@/lib/brand';
 
 type Mode = 'login' | 'register' | 'forgot' | 'reset';
 
@@ -113,8 +113,9 @@ export default function SignInPage() {
     <div className="min-h-screen gemini-wash flex items-center justify-center p-4">
       <div className="w-full max-w-[480px] bg-white rounded-[28px] shadow-xl border border-[#e8eaed] p-6 sm:p-10">
         <div className="flex flex-col items-center text-center">
-          <div className="w-12 h-12 rounded-full bg-[#e8f0fe] flex items-center justify-center mb-4">
-            <Sparkles className="text-[#1a73e8]" size={22} />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11.5px] font-medium mb-3">
+            <Sparkles size={13} className="text-[#1a73e8]" />
+            <span>{AI_NAME} • Created by <strong>{CREATOR_NAME}</strong></span>
           </div>
           <h1 className="text-[28px] sm:text-[32px] font-normal tracking-tight text-[#1f1f1f]">{title}</h1>
           <p className="text-sm text-[#444746] mt-1">{subtitle}</p>
@@ -256,6 +257,9 @@ export default function SignInPage() {
           </Link>
           <p className="text-[11px] text-center">
             By continuing you can chat with {AI_NAME}. Signed-in chats stay in your account.
+          </p>
+          <p className="text-[11.5px] text-center text-zinc-500 font-medium mt-1">
+            ✨ Created &amp; Engineered exclusively by <strong className="text-zinc-800 font-semibold">{CREATOR_NAME}</strong>
           </p>
         </div>
       </div>
