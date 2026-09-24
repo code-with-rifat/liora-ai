@@ -63,62 +63,62 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   }, []);
 
   return (
-    <header className="h-14 bg-transparent px-3 sm:px-5 flex items-center justify-between z-30 sticky top-0">
-      <div className="flex items-center gap-2">
+    <header className="h-14 bg-transparent px-2.5 sm:px-5 flex items-center justify-between z-30 sticky top-0 w-full max-w-full overflow-hidden">
+      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink">
         <button
           onClick={onToggleSidebar}
-          className="p-2 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100"
+          className="p-1.5 sm:p-2 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 shrink-0"
           title="Menu"
         >
-          <Menu size={20} />
+          <Menu size={19} />
         </button>
         <button
           onClick={onOpenCreatorModal}
-          className="flex flex-col text-left group cursor-pointer"
+          className="flex flex-col text-left group cursor-pointer min-w-0"
           title={`Created by ${CREATOR_NAME}`}
         >
-          <span className="font-semibold text-[16px] sm:text-[18px] tracking-tight flex items-center gap-1.5 text-[#1f1f1f] group-hover:text-[#1a73e8] transition-colors">
+          <span className="font-semibold text-[15px] sm:text-[18px] tracking-tight flex items-center gap-1.5 text-[#1f1f1f] group-hover:text-[#1a73e8] transition-colors leading-tight">
             {AI_NAME}
-            <span className="text-[9.5px] px-1.5 py-0.2 rounded-full bg-blue-50 text-blue-600 font-semibold border border-blue-200/60">
+            <span className="text-[9px] sm:text-[9.5px] px-1.5 py-0.2 rounded-full bg-blue-50 text-blue-600 font-semibold border border-blue-200/60">
               AI
             </span>
           </span>
-          <span className="text-[10px] sm:text-[11px] font-medium text-zinc-500 group-hover:text-blue-600 transition-colors -mt-0.5 truncate max-w-[130px] sm:max-w-none">
+          <span className="text-[9.5px] sm:text-[11px] font-medium text-zinc-500 group-hover:text-blue-600 transition-colors truncate max-w-[100px] sm:max-w-none leading-tight">
             by {CREATOR_NAME}
           </span>
         </button>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
         <ModelSelect value={activeModel} onChange={onSelectModel} compact />
         <button
           onClick={onOpenSettings}
-          className="p-2 rounded-full text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100"
+          className="p-1.5 sm:p-2 rounded-full text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 shrink-0"
           title="Settings"
         >
           <Settings size={18} />
         </button>
         {user ? (
-          <div className="relative" ref={menuRef}>
+          <div className="relative shrink-0" ref={menuRef}>
             <button
               onClick={() => setMenuOpen((v) => !v)}
               className="rounded-full ring-2 ring-transparent hover:ring-[#dadce0] overflow-hidden"
               title={user.email}
             >
-              <Avatar user={user} size={32} />
+              <Avatar user={user} size={30} />
             </button>
             {menuOpen && (
-              <div className="absolute right-0 mt-3 w-[320px] bg-white rounded-[28px] shadow-2xl border border-[#e8eaed] p-4 z-50">
+              <div className="absolute right-0 mt-3 w-[290px] sm:w-[320px] bg-white rounded-[24px] sm:rounded-[28px] shadow-2xl border border-[#e8eaed] p-4 z-50">
                 <div className="flex flex-col items-center text-center px-2 py-3">
-                  <Avatar user={user} size={72} />
-                  <p className="mt-3 text-[16px] font-medium text-[#1f1f1f]">{user.name}</p>
-                  <p className="text-sm text-[#80868b] truncate w-full">{user.email}</p>
+                  <Avatar user={user} size={64} />
+                  <p className="mt-3 text-[15px] sm:text-[16px] font-medium text-[#1f1f1f]">{user.name}</p>
+                  <p className="text-xs sm:text-sm text-[#80868b] truncate w-full">{user.email}</p>
                   <button
                     onClick={() => {
                       setMenuOpen(false);
                       onOpenSettings();
                     }}
-                    className="mt-4 h-9 px-4 rounded-full border border-[#dadce0] text-sm font-medium text-[#1f1f1f] hover:bg-[#f8fafc]"
+                    className="mt-4 h-9 px-4 rounded-full border border-[#dadce0] text-xs sm:text-sm font-medium text-[#1f1f1f] hover:bg-[#f8fafc]"
                   >
                     Manage your {AI_NAME} Account
                   </button>
@@ -154,7 +154,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
         ) : (
           <Link
             href="/signin"
-            className="h-9 px-4 rounded-full border border-[#dadce0] text-sm font-medium text-[#1a73e8] hover:bg-[#e8f0fe] inline-flex items-center"
+            className="h-8 sm:h-9 px-3 sm:px-4 rounded-full border border-[#dadce0] text-xs sm:text-sm font-medium text-[#1a73e8] hover:bg-[#e8f0fe] inline-flex items-center justify-center whitespace-nowrap shrink-0 transition-colors"
           >
             Sign in
           </Link>

@@ -17,7 +17,7 @@ export const ModelSelect: React.FC<ModelSelectProps> = ({ value, onChange, compa
       title="Choose AI model"
       className={
         compact
-          ? 'text-xs font-medium text-[#444746] bg-transparent px-2 py-1 rounded-full hover:bg-[#f1f3f4] focus:outline-none cursor-pointer max-w-[92px]'
+          ? 'text-[11.5px] sm:text-xs font-medium text-[#444746] bg-transparent px-1.5 sm:px-2 py-1 rounded-full hover:bg-[#f1f3f4] focus:outline-none cursor-pointer max-w-[76px] sm:max-w-[92px] truncate shrink-0'
           : 'w-full bg-white border border-[#dadce0] rounded-xl px-3 py-2 text-sm text-[#1f1f1f] focus:outline-none focus:border-[#1a73e8]'
       }
     >

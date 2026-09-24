@@ -275,9 +275,9 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
     const first = userName?.trim().split(/\s+/)[0];
     return (
       <div className="min-h-[calc(100vh-56px)] w-full gemini-wash flex flex-col items-center justify-center px-4 py-8 overflow-y-auto">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-blue-200/80 text-zinc-700 text-[12px] sm:text-[13px] font-medium shadow-xs mb-3 backdrop-blur-xs">
-          <Sparkles size={14} className="text-[#1a73e8] animate-pulse shrink-0" />
-          <span>Architected &amp; Created by <strong className="text-zinc-950 font-semibold">{CREATOR_NAME}</strong></span>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 border border-blue-200/80 text-zinc-700 text-[11.5px] sm:text-[13px] font-medium shadow-xs mb-3 backdrop-blur-xs max-w-[95vw]">
+          <Sparkles size={13} className="text-[#1a73e8] animate-pulse shrink-0" />
+          <span className="truncate sm:overflow-visible">Architected &amp; Created by <strong className="text-zinc-950 font-semibold">{CREATOR_NAME}</strong></span>
         </div>
         <h1 className="gemini-hello text-[36px] sm:text-[52px] font-medium tracking-tight mb-2 text-center">
           {first ? `Hello, ${first}` : 'Hello'}
