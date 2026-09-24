@@ -64,12 +64,34 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   const [interimTranscript, setInterimTranscript] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const recognitionRef = useRef<any>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const sendingRef = useRef(false);
 
   const showHero = messages.filter((m) => m.role === 'user').length === 0;
+
+  const scrollToBottom = (smooth = true) => {
+    requestAnimationFrame(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTo({
+          top: scrollContainerRef.current.scrollHeight,
+          behavior: smooth ? 'smooth' : 'auto',
+        });
+      }
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({
+          behavior: smooth ? 'smooth' : 'auto',
+          block: 'end',
+        });
+      }
+    });
+  };
+
+  useEffect(() => {
+    scrollToBottom(true);
+  }, [messages, isProcessing]);
 
   useEffect(() => {
     if (!isProcessing) sendingRef.current = false;
@@ -149,6 +171,9 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
     setInputText('');
     setAttachedImage(null);
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
+    scrollToBottom(false);
+    setTimeout(() => scrollToBottom(true), 30);
+    setTimeout(() => scrollToBottom(true), 120);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -283,7 +308,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
 
   return (
     <div className="flex flex-col h-[calc(100vh-56px)] w-full bg-[#fafafa]">
-      <div className="flex-1 overflow-y-auto px-4 py-8">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 py-8 scroll-smooth">
         <div className="max-w-2xl mx-auto w-full space-y-6">
           {messages.map((msg) => (
             <ChatMessageItem key={msg.id} message={msg} persona={activePersona} />

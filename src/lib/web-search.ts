@@ -195,7 +195,128 @@ async function searchLiveCurrency(query: string): Promise<WebSearchResult[]> {
   }
 }
 
-// 5. Tavily Web Search (Optional fallback if user provides TAVILY_API_KEY in Vercel)
+// 5. DuckDuckGo Instant Knowledge & Instant Answer
+async function searchDuckDuckGoInstant(query: string): Promise<WebSearchResult[]> {
+  try {
+    const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
+    const res = await fetchWithTimeout(url, {
+      headers: { Accept: 'application/json' },
+    }, 2500);
+
+    if (!res.ok) return [];
+    const data = await res.json();
+    const results: WebSearchResult[] = [];
+
+    if (data.AbstractText && data.AbstractURL) {
+      results.push({
+        title: data.Heading || query,
+        url: data.AbstractURL,
+        snippet: data.AbstractText,
+        source: data.AbstractSource || 'DuckDuckGo Knowledge',
+      });
+    }
+
+    if (data.RelatedTopics && Array.isArray(data.RelatedTopics)) {
+      for (const topic of data.RelatedTopics.slice(0, 3)) {
+        if (topic.Text && topic.FirstURL) {
+          results.push({
+            title: topic.Text.split(' - ')[0] || query,
+            url: topic.FirstURL,
+            snippet: topic.Text,
+            source: 'DuckDuckGo Knowledge',
+          });
+        }
+      }
+    }
+
+    return results;
+  } catch {
+    return [];
+  }
+}
+
+// 6. DuckDuckGo Live HTML Web Search (Comprehensive general web results)
+function cleanHtmlText(str: string): string {
+  if (!str) return '';
+  return str
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'")
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractRealUrl(rawHref: string): string {
+  if (!rawHref) return '';
+  if (rawHref.includes('uddg=')) {
+    const parts = rawHref.split('uddg=')[1]?.split('&')[0];
+    if (parts) {
+      try {
+        return decodeURIComponent(parts);
+      } catch {
+        return parts;
+      }
+    }
+  }
+  if (rawHref.startsWith('//')) return `https:${rawHref}`;
+  return rawHref;
+}
+
+async function searchDuckDuckGoWeb(query: string): Promise<WebSearchResult[]> {
+  try {
+    const res = await fetchWithTimeout(
+      `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`,
+      {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9,bn;q=0.8',
+        },
+      },
+      3800
+    );
+
+    if (!res.ok) return [];
+    const html = await res.text();
+
+    const results: WebSearchResult[] = [];
+    const resultBlocks = html.split(/class="result\s+results_links/g).slice(1);
+
+    for (const block of resultBlocks.slice(0, 5)) {
+      const titleMatch = block.match(/<a[^>]*class="result__a"[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/);
+      const snippetMatch = block.match(/<a[^>]*class="result__snippet"[^>]*>([\s\S]*?)<\/a>/);
+
+      if (titleMatch) {
+        const rawUrl = titleMatch[1];
+        const rawTitle = titleMatch[2];
+        const rawSnippet = snippetMatch ? snippetMatch[1] : '';
+
+        const url = extractRealUrl(rawUrl);
+        const title = cleanHtmlText(rawTitle);
+        const snippet = cleanHtmlText(rawSnippet);
+
+        let source = 'DuckDuckGo Web';
+        try {
+          source = new URL(url).hostname.replace('www.', '');
+        } catch {}
+
+        if (title && url && !url.includes('duckduckgo.com/y.js')) {
+          results.push({ title, url, snippet, source });
+        }
+      }
+    }
+    return results;
+  } catch {
+    return [];
+  }
+}
+
+// 7. Tavily Web Search (Optional fallback if user provides TAVILY_API_KEY in Vercel)
 async function searchTavily(query: string): Promise<WebSearchResult[]> {
   const key = process.env.TAVILY_API_KEY;
   if (!key) return [];
@@ -215,7 +336,7 @@ async function searchTavily(query: string): Promise<WebSearchResult[]> {
           max_results: 4,
         }),
       },
-      4500
+      3000
     );
 
     if (!res.ok) return [];
@@ -231,10 +352,9 @@ async function searchTavily(query: string): Promise<WebSearchResult[]> {
   }
 }
 
-// Check if a query is informational / factual / news / real-time
 // Check if a query specifically benefits from live web search
 export function isSearchWorthy(query: string): boolean {
-  if (!query || query.trim().length < 3) return false;
+  if (!query || query.trim().length < 2) return false;
   const q = query.toLowerCase().trim();
 
   // Explicit keywords that demand real-time search
@@ -242,10 +362,13 @@ export function isSearchWorthy(query: string): boolean {
     'news', 'today', 'latest', 'current', 'update', 'notun', 'khobor', 'ajker',
     'bortoman', 'price', 'dam', 'rate', 'weather', 'abohawa', 'score', 'match',
     'khela', 'release date', 'election', '2025', '2026', 'dollar', 'taka',
-    'search', 'google', 'live', 'shobshobon', 'somproti'
+    'search', 'google', 'duckduckgo', 'live', 'shobshobon', 'somproti', 'who is', 'ke',
+    'khobor', 'ki obostha', 'koto', 'rate koto', 'somoy', 'date', 'khujo', 'search koro',
+    'খবর', 'আজকের', 'বর্তমান', 'দাম', 'আবহাওয়া', 'গুগল', 'সার্চ', 'ডাকডাকগো', 'ডলার', 'টাকা',
+    'কে', 'কখন', 'কোথায়', 'কী', 'কেন', 'স্কোর', 'খেলা', 'সংবাদ'
   ];
 
-  return triggerKeywords.some((k) => q.includes(k));
+  return triggerKeywords.some((k) => q.includes(k)) || /[\?|？|।]/.test(query);
 }
 
 // Main Real-Time Web Search & Grounding Engine
@@ -265,15 +388,18 @@ export async function performWebSearchGrounding(
   const cleanQuery = query.replace(/[?।!,]/g, ' ').trim();
   const q = cleanQuery.toLowerCase();
 
-  const searchTasks: Array<Promise<WebSearchResult[]>> = [];
+  const searchTasks: Array<Promise<WebSearchResult[]>> = [
+    searchDuckDuckGoWeb(cleanQuery),
+    searchDuckDuckGoInstant(cleanQuery),
+  ];
 
   if (process.env.TAVILY_API_KEY) {
     searchTasks.push(searchTavily(cleanQuery));
   }
 
-  if (q.includes('weather') || q.includes('abohawa') || q.includes('temperature') || q.includes('tapmatra')) {
+  if (q.includes('weather') || q.includes('abohawa') || q.includes('temperature') || q.includes('tapmatra') || q.includes('আবহাওয়া')) {
     searchTasks.push(searchLiveWeather(cleanQuery));
-  } else if (q.includes('dollar') || q.includes('usd') || q.includes('taka') || q.includes('bdt') || q.includes('rate') || q.includes('currency')) {
+  } else if (q.includes('dollar') || q.includes('usd') || q.includes('taka') || q.includes('bdt') || q.includes('rate') || q.includes('currency') || q.includes('ডলার') || q.includes('টাকা')) {
     searchTasks.push(searchLiveCurrency(cleanQuery));
   } else if (q.includes('tech') || q.includes('next.js') || q.includes('ai') || q.includes('github') || q.includes('python')) {
     searchTasks.push(searchHackerNews(cleanQuery));
@@ -309,12 +435,12 @@ export async function performWebSearchGrounding(
 
   const formattedLines = finalResults.map((r, idx) => {
     return `[${idx + 1}] Title: "${r.title}"
-    URL: ${r.url}
-    Source: ${r.source || 'Web Source'}${r.publishedDate ? ` | Date: ${r.publishedDate}` : ''}
-    Details: ${r.snippet}`;
+URL: ${r.url}
+Source: ${r.source || 'Web Source'}${r.publishedDate ? ` | Date: ${r.publishedDate}` : ''}
+Details: ${r.snippet}`;
   });
 
-  const formattedContext = `### 🌐 LIVE REAL-TIME GOOGLE & WEB SEARCH RESULTS (Current Local Time: 2026-09-24):
+  const formattedContext = `### 🌐 LIVE REAL-TIME GOOGLE & DUCKDUCKGO SEARCH RESULTS (Current Local Time: 2026-09-24):
 ${formattedLines.join('\n\n')}
 
 ### 📌 CRITICAL CITATION & SOURCE REFERENCE RULES (GOOGLE GEMINI STYLE):
