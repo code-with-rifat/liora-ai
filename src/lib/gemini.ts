@@ -1,4 +1,9 @@
+import dns from 'dns';
 import { AI_NAME } from './brand';
+
+try {
+  dns.setDefaultResultOrder('ipv4first');
+} catch {}
 import { creatorShortReply, CREATOR_PROFILE } from './creator';
 import {
   detectLanguageLock,
@@ -16,6 +21,7 @@ import { publicImagePath } from './image-clean';
 import { findKnowledgeMatch } from './knowledge-base';
 import { extractConversationMemory, resolveMemoryQuery } from './memory';
 import { retrieveRAGContext } from './rag-engine';
+import { performWebSearchGrounding } from './web-search';
 
 export interface ChatEngineOptions {
   messages: ChatMessage[];
@@ -68,7 +74,8 @@ function detectOptimalTemperature(query: string): number {
 function buildAgenticRAGSystemPrompt(
   langHint: string,
   messages: ChatMessage[],
-  latestQuery: string
+  latestQuery: string,
+  searchGroundingContext?: string
 ): string {
   const memory = extractConversationMemory(messages);
   const memoryLines: string[] = [];
@@ -80,9 +87,9 @@ function buildAgenticRAGSystemPrompt(
 
   const ragContext = retrieveRAGContext(latestQuery, 3);
 
-  return `You are ${AI_NAME}, an exceptionally intelligent, adaptive, and highly capable AI Assistant engineered with Google Gemini's signature communication style, deep reasoning, and clean multi-lingual formatting.
+  return `You are ${AI_NAME}, an exceptionally intelligent, adaptive, and highly capable AI Assistant engineered with Google Gemini's signature communication style, deep reasoning, real-time web search grounding, and clean multi-lingual formatting.
 
-### 🌟 GEMINI-GRADE SIGNATURE RESPONSE & FORMATTING RULES (STRICT):
+### 🌟 GEMINI-GRADE SIGNATURE RESPONSE & CITATION RULES (STRICT):
 
 1. **Direct Opening (Zero Fluff / No Filler)**:
    - Never start with conversational filler or throat-clearing phrases (e.g. NEVER say "Sure, I can help with that", "Apnar proshner uttor holo", "Here is your answer", "Hey there!").
@@ -95,29 +102,39 @@ function buildAgenticRAGSystemPrompt(
    - **Bullet Points (- / *)**: Use bullet points for features, details, options, and descriptions.
 
 3. **Smart Markdown Tables**:
-   - Whenever comparisons, pros/cons, feature matrices, plans, or structured datasets arise, ALWAYS generate clean Markdown Tables ("| Column 1 | Column 2 | Column 3 |").
+   - Whenever comparisons, pros/cons, prices, exchange rates, feature matrices, plans, or structured datasets arise, ALWAYS generate clean Markdown Tables ("| Column 1 | Column 2 | Column 3 |").
 
-4. **Adaptive Tone & Language Matching**:
+4. **Real-Time Web Search & Source Citations (Gemini / Perplexity Style)**:
+   - When real-time search context or factual web grounding is provided below, incorporate the latest facts, live data, and current details.
+   - Ground facts and statements using inline markdown citations, e.g. [Source Name](URL) or [1](URL).
+   - At the very bottom of your response, ALWAYS include a clean, dedicated section formatted exactly like:
+---
+### 🌐 সূত্রসমূহ (Sources & References):
+1. [Source Title](Source URL) — *Publisher/Domain*
+2. [Source Title](Source URL) — *Publisher/Domain*
+
+5. **Adaptive Tone & Language Matching**:
    - Perfectly match the user's language and style:
      * **Bengali (বাংলা)**: Natural, rich, helpful, and grammatically sound Bangla.
      * **Banglish**: Authentic, conversational, smart, and friendly Banglish.
      * **English**: Clear, structured, articulate, and professional English.
    - Keep the tone intelligent, smart, and warmly friendly.
 
-5. **No Robotic Closes**:
+6. **No Robotic Closes**:
    - NEVER use artificial closing headers or mechanical endings like "In conclusion", "Summary", or "Bottom line".
    - Conclude naturally with a thoughtful finishing sentence, a helpful follow-up offer, or a concise actionable bullet.
 
-6. **Chain-of-Thought & Anti-Hallucination**:
+7. **Chain-of-Thought & Anti-Hallucination**:
    - For coding, complex logic, and calculations, reason step-by-step.
    - Always format code blocks with explicit language tags (\`\`\`typescript, \`\`\`php, \`\`\`python) and math in LaTeX (\`$x^2$\`, \`$$A = \\pi r^2$$\`).
-   - Ground facts strictly in verified knowledge and RAG context; never invent unverified information.
+   - Ground facts strictly in verified knowledge and real-time search context; never invent unverified information.
 
-7. **Creator & Architect Attribution**:
+8. **Creator & Architect Attribution**:
    - You were architected and created by **Md. Riazul Islam Rifat** (Full-Stack Software Engineer & AI Systems Architect based in Dhaka, Bangladesh; Portfolio: ${CREATOR_PROFILE.portfolio}, Email: ${CREATOR_PROFILE.email}, GitHub: ${CREATOR_PROFILE.github}).
 
 ${memoryLines.length ? `### ACTIVE USER PROFILE & SESSION MEMORY:\n${memoryLines.join('\n')}\n` : ''}
 ${ragContext ? `### RETRIEVED VERIFIED KNOWLEDGE (RAG CONTEXT):\n${ragContext}\n` : ''}
+${searchGroundingContext ? `${searchGroundingContext}\n` : ''}
 ### TARGET LANGUAGE INSTRUCTION:
 ${langHint}`;
 }
@@ -482,9 +499,6 @@ export async function processChatStream(
   const userText = latestUserText(messages);
   const lang = resolvedLang(messages, language);
   const hint = languageHint(lang);
-  const systemPrompt = buildAgenticRAGSystemPrompt(hint, messages, userText);
-  const geminiKey = apiKey || process.env.GEMINI_API_KEY || '';
-  const resolved = resolveChatModel(modelId, Boolean(geminiKey));
 
   // 1. Direct Creator Question Handling
   if (isCreatorQuestion(userText) || isCreatorInfoQuestion(userText)) {
@@ -514,7 +528,13 @@ export async function processChatStream(
     };
   }
 
-  // 4. Parallel Resilient AI Execution Pipeline with Full Memory & RAG
+  // 4. Live Real-Time Web Search & Grounding (Google News, Live Weather, Exchange Rates, Tech RSS)
+  const searchGrounding = await performWebSearchGrounding(userText, lang);
+  const systemPrompt = buildAgenticRAGSystemPrompt(hint, messages, userText, searchGrounding.formattedContext);
+  const geminiKey = apiKey || process.env.GEMINI_API_KEY || '';
+  const resolved = resolveChatModel(modelId, Boolean(geminiKey));
+
+  // 5. Parallel Resilient AI Execution Pipeline with Full Memory, RAG & Live Search
   const jobs: Array<Promise<{ text: string; modelUsed: string } | null>> = [
     // Gemini API
     geminiKey
@@ -539,8 +559,11 @@ export async function processChatStream(
 
   const winner = await firstTruthy(jobs);
   if (winner) {
+    const modelUsed = searchGrounding.hasRealTimeData
+      ? `${winner.modelUsed} • Live Grounded`
+      : winner.modelUsed;
     onDelta(winner.text);
-    return { ...winner, language: lang };
+    return { ...winner, modelUsed, language: lang };
   }
 
   // 5. Offline / Edge Knowledge Base & Math Calculation Solver
