@@ -5,6 +5,10 @@ import { isAIModelId } from '@/lib/models';
 import { getSettings } from '@/lib/app-store';
 import { getSessionUser } from '@/lib/session';
 
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

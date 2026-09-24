@@ -177,6 +177,17 @@ export default function Home() {
         }),
       });
 
+      if (!res.ok) {
+        let errMessage = 'Chat request failed';
+        try {
+          const errData = await res.json();
+          errMessage = errData.error || errData.message || errMessage;
+        } catch {
+          errMessage = `Server error (${res.status})`;
+        }
+        throw new Error(errMessage);
+      }
+
       if (!res.body) throw new Error('No response body');
 
       persist({
